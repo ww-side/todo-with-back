@@ -1,5 +1,5 @@
 export class CreateTodoDto {
-  readonly id: string;
+  readonly id: number;
   readonly title: string;
   readonly category: string;
   readonly content: string;
