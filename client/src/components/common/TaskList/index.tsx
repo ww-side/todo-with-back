@@ -17,6 +17,7 @@ import { type TodoType } from "../../../types/todo.ts";
 import { useTodos } from "../../../store/todos.ts";
 import { useModalState } from "../../../store/modalsState.ts";
 import Checkbox from "antd/es/checkbox/Checkbox";
+import todoService from "../../../services/Todo.ts";
 
 const useStyles = createUseStyles({
   todoWrapper: {
@@ -67,24 +68,22 @@ const TaskList = () => {
       });
   }, []);
 
-  const handleDeleteTodo = (id: number | string) => {
-    axios
-      .delete(`http://localhost:3000/api/todo/${id}`)
-      .then(() => {
-        const updatedTodos = todos.filter((todo) => todo.id !== id);
-        setTodos(updatedTodos);
-      })
-      .catch((err) => {
-        console.error("Err:", err);
-      });
+  const handleDeleteTodo = async (id: number) => {
+    try {
+      await todoService.deleteTodo(id);
+      const updatedTodos = todos.filter((todo) => todo.id !== id);
+
+      setTodos(updatedTodos);
+    } catch (err) {
+      console.error("Error deleting todo:", err);
+    }
   };
 
-  const onChangeCheckbox = (id: number | string) => {
+  const onChangeCheckbox = (id: number) => {
     const updatedIsDone = !todos.find((todo) => todo.id === id)?.isDone;
-    axios
-      .patch(`http://localhost:3000/api/todo/${id}/done`, {
-        isDone: updatedIsDone,
-      })
+
+    todoService
+      .updateTodoIsDone(id, updatedIsDone)
       .then(() => {
         changeIsDone();
         const updatedTodos = todos.map((todo) =>

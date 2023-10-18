@@ -1,6 +1,5 @@
 // Core
 import { type FieldValues, type SubmitHandler } from "react-hook-form";
-import axios from "axios";
 
 // Components
 import AppForm from "../../ui/AppForm";
@@ -9,18 +8,17 @@ import AppForm from "../../ui/AppForm";
 import { useTodos } from "../../../store/todos.ts";
 import { useModalState } from "../../../store/modalsState.ts";
 
+// Services
+import todoService from "../../../services/Todo.ts";
+
 const FormAddTask = () => {
   const { addTodo } = useTodos();
   const { changeAddModalState } = useModalState();
+
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
-    await axios
-      .post("http://localhost:3000/api/todo/", data)
-      .then((res) => {
-        addTodo(res.data);
-      })
-      .catch((err) => {
-        console.error("Err:", err);
-      });
+    const res = await todoService.addTodo(data);
+
+    addTodo(res);
     changeAddModalState();
   };
 

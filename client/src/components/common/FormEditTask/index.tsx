@@ -1,7 +1,6 @@
 // Core
 import { type FC } from "react";
 import { type FieldValues, type SubmitHandler } from "react-hook-form";
-import axios from "axios";
 
 // Components
 import AppForm from "../../ui/AppForm";
@@ -13,6 +12,9 @@ import { type TodoType } from "../../../types/todo.ts";
 import { useTodos } from "../../../store/todos.ts";
 import { useModalState } from "../../../store/modalsState.ts";
 
+// Services
+import todoService from "../../../services/Todo.ts";
+
 type FormEditTaskProps = {
   defaultValues: TodoType;
 };
@@ -23,15 +25,9 @@ const FormEditTask: FC<FormEditTaskProps> = ({ defaultValues }) => {
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     const id = defaultValues.id;
+    const res = await todoService.editTodo(data, id);
 
-    await axios
-      .put(`http://localhost:3000/api/todo/${id}`, data)
-      .then((res) => {
-        updateTodo(res.data);
-      })
-      .catch((err) => {
-        console.error("Err:", err);
-      });
+    updateTodo(res);
     changeEditModalState();
   };
 
